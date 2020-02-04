@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+				text-align:center;
+			}
+			a {
+				color:#0078ff;
+			}
+			#info {
+				color:#fff;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+				z-index:100;
+			}
+		</style>
+	</head>
+	<body>
+
+        <script src="jsScript/jsLibraries/three.js"></script>
+        <script src="jsScript/jsGeometry/coordinates.js"></script>
+        <script src="jsScript/jsGeometry/color.js"></script>
+        <script src="jsScript/jsGeometry/icosphere.js"></script>
+        <script src="jsScript/jsGeometry/simplexnoise.js"></script>
+        <script src="jsScript/jsSpaceGeometry/spaceorbgeometry.js"></script>
+		<script src="jsScript/jsSpaceGeometry/stargeometry.js"></script>
+
+		<script>
+
+			let starGeometry = new StarGeometry();
+			let camera, scene, renderer;
+
+			init();
+			animate();
+
+			function init() {
+
+                // Camera
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 30000 );
+				camera.position.z = 5;
+				scene = new THREE.Scene();
+                
+                // Add the object to the scene
+                starGeometry.display(scene);
+				
+				// Renderer
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				starGeometry.mesh.rotation.x += 0.01;
+				starGeometry.mesh.rotation.y += 0.02;
+
+				renderer.render( scene, camera );
+			}
+
+		</script>
+	</body>
+</html>

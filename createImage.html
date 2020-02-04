@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // we create a canvas element
+        var canvas = document.createElement('canvas');
+        var height=100;
+        var width=200;
+
+        canvas.height=height;
+        canvas.width=width;
+        // getting the context will allow to manipulate the image
+        var context = canvas.getContext("2d");
+
+        // We create a new imageData.
+        var imageData=context.createImageData(width, height);
+        // The property data will contain an array of int8
+        var data=imageData.data;
+        for (var i=0; i<height*width; i++) {
+            data[i*4+0]=Math.random()*256 | 0; // Red
+            data[i*4+1]=Math.random()*256 | 0; // Green
+            data[i*4+2]=Math.random()*256 | 0; // Blue
+            data[i*4+3]=90; // alpha (transparency)
+        }
+        // we put this random image in the context
+        context.putImageData(imageData, 0, 0); // at coords 0,0
+
+        // we can make some drawing as well
+        context.lineWidth=6;
+        context.strokeStyle="green";
+        context.rect(20,20,20,20);
+        context.stroke();
+
+        context.lineWidth=2;
+        context.strokeStyle="yellow";
+        context.fillStyle="red";
+        context.fillRect(50,50,20,20);
+        context.stroke();
+
+
+        function createData(type, mimetype) {
+            var value=canvas.toDataURL(mimetype);
+            if (value.indexOf(mimetype)>0) { // we check if the format is supported
+                return {
+                    type:type,
+                    value:value
+                }
+            } else {
+                return false;
+            }
+        }
+
+
+        let image = createData("png","image/png");
+
+
+    </script>
+    
+</body>
+</html>

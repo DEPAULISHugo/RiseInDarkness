@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+				text-align:center;
+			}
+			a {
+				color:#0078ff;
+			}
+			#info {
+				color:#fff;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+				z-index:100;
+			}
+		</style>
+	</head>
+	<body>
+
+		
+
+		<script src="jsScript/jsLibraries/three.js"></script>
+		<script src="jsScript/jsGeometry/icosphere.js"></script>
+		<script src="jsScript/jsGeometry/simplexnoise.js"></script>
+
+		<script>
+
+			const icosphere = new Icosphere(1, 0);
+			let camera, scene, renderer;
+			let geometry, material, planet;
+
+			// we create a canvas element
+			var canvas = document.createElement('canvas');
+			var height=100;
+			var width=200;
+
+			canvas.height=height;
+			canvas.width=width;
+			// getting the context will allow to manipulate the image
+			var context = canvas.getContext("2d");
+
+			// We create a new imageData.
+			var imageData=context.createImageData(width, height);
+			// The property data will contain an array of int8
+			var data=imageData.data;
+			for (var i=0; i<height*width; i++) {
+				data[i*4+0]=Math.random()*256 | 0; // Red
+				data[i*4+1]=Math.random()*256 | 0; // Green
+				data[i*4+2]=Math.random()*256 | 0; // Blue
+				data[i*4+3]=90; // alpha (transparency)
+			}
+			// we put this random image in the context
+			context.putImageData(imageData, 0, 0); // at coords 0,0
+
+			// we can make some drawing as well
+			context.lineWidth=6;
+			context.strokeStyle="green";
+			context.rect(20,20,20,20);
+			context.stroke();
+
+			context.lineWidth=2;
+			context.strokeStyle="yellow";
+			context.fillStyle="red";
+			context.fillRect(50,50,20,20);
+			context.stroke();
+
+
+			function createData(type, mimetype) {
+				var value=canvas.toDataURL(mimetype);
+				if (value.indexOf(mimetype)>0) { // we check if the format is supported
+					return {
+						type:type,
+						value:value
+					}
+				} else {
+					return false;
+				}
+			}
+
+
+			let image = createData("png","image/png");
+	
+			init();
+			animate();
+
+			function init() {
+				
+				// Camera
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 30000 );
+				camera.position.z = 5;
+				scene = new THREE.Scene();			
+				
+				// Geometry
+				geometry = new THREE.BufferGeometry();				
+				geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( icosphere.vertices, 3 ) ); // itemSize = 3 because there are 3 values (components) per vertex
+				geometry.setAttribute( 'normal', new THREE.Float32BufferAttribute( icosphere.normals, 3 ) );    // itemSize = 3 because there are 3 values (components) per normal
+				geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( icosphere.texCoords, 2 ) );      // itemSize = 2 because there are 2 values (components) per uv
+				geometry.setIndex(icosphere.indices);
+				
+				// Material
+				//let texture = new THREE.TextureLoader().load( image.value );
+				let texture = new THREE.TextureLoader().load( 'textures/Star_1.bmp' );
+				material = new THREE.MeshBasicMaterial({map: texture});
+
+				// Planet
+				planet = new THREE.Mesh(geometry, material);
+  				scene.add(planet);
+				
+				// Renderer
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				planet.rotation.x += 0.01;
+				planet.rotation.y += 0.02;
+
+				renderer.render( scene, camera );
+			}
+
+		</script>
+	</body>
+</html>
